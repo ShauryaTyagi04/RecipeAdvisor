@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:recipe_advisor_app/models/recipe_model.dart';
 import 'package:recipe_advisor_app/widgets/custom_app_bar.dart';
 import 'package:recipe_advisor_app/widgets/custom_button.dart';
 import 'package:recipe_advisor_app/widgets/info_card.dart';
 import 'package:recipe_advisor_app/widgets/ingredients_panel.dart';
+import 'package:recipe_advisor_app/widgets/stroked_text.dart';
 
 class RecipeOutputScreen extends StatelessWidget {
   const RecipeOutputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const List<String> recipeSteps = [
-      'Preheat the oven to 200°C.',
-      'Season the chicken with salt, pepper, and herbs.',
-      'Place in the oven and roast for 25 minutes, or until cooked through.',
-      'Let it rest for 5 minutes before serving.',
-    ];
+    final Recipe? recipe =
+        ModalRoute.of(context)?.settings.arguments as Recipe?;
+
+    if (recipe == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Error")),
+        body: const Center(
+          child: Text("Could not load recipe data. Please go back."),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -23,66 +31,75 @@ class RecipeOutputScreen extends StatelessWidget {
         hasPrefixIcon: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // The first row of info cards remains unchanged.
-            const Row(
+            StrokedText(
+              text: recipe.name,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              recipe.description,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.livvic(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
               children: [
                 Expanded(
                   child: InfoCard(
                     heading: "Category",
-                    text: "Dinner",
+                    text: recipe.category, // DYNAMIC
                     icon: Icons.dinner_dining,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: InfoCard(
                     heading: "Cook Time",
-                    text: "30 Minutes",
+                    text: recipe.cookTime, // DYNAMIC
                     icon: Icons.timer_outlined,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-
-            // --- THE NEW LAYOUT ---
-            // A Row holds the header and the last card.
-            const Row(
-              // Align items to the bottom for a clean look.
+            Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                IngredientsHeader(),
-                SizedBox(width: 16),
-                // The InfoCard expands to fill the remaining space on the right.
+                const IngredientsHeader(),
+                const SizedBox(width: 16),
                 Expanded(
                   child: InfoCard(
                     heading: "Calories",
-                    text: "450 kcal",
+                    text:
+                        "${recipe.calories.toStringAsFixed(0)} kcal", // DYNAMIC
                     icon: Icons.local_fire_department_outlined,
                   ),
                 ),
               ],
             ),
-
             Padding(
               padding: const EdgeInsets.only(top: 5, bottom: 20),
-              child: const IngredientsBody(),
+              child:
+                  IngredientsBody(ingredients: recipe.ingredients), // DYNAMIC
             ),
             InfoCard.fromList(
               icon: Icons.list_alt_rounded,
               heading: 'Instructions',
-              steps: recipeSteps,
+              steps: recipe.instructions, // DYNAMIC
               textFontSize: 18.0,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: CustomButton(
                 onTap: () {
-                  Navigator.pushNamed(context, '/IngredientsInputScreen');
+                  // Use pop to go back to the previous screen instead of pushing a new one
+                  Navigator.pop(context);
                 },
                 text: 'BACK',
                 fontSize: 25,

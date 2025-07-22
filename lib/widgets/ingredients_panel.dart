@@ -45,16 +45,7 @@ class IngredientsBody extends StatelessWidget {
 
   const IngredientsBody({
     super.key,
-    this.ingredients = const [
-      'Chicken Breast',
-      'Olive Oil',
-      'Garlic',
-      'Rosemary',
-      'Salt',
-      'Black Pepper',
-      'Lemon',
-      'Potatoes'
-    ],
+    required this.ingredients,
   });
 
   @override
@@ -92,7 +83,7 @@ class IngredientsBody extends StatelessWidget {
                 style: GoogleFonts.livvic(
                   color: Colors.white,
                   fontSize: 18,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                 ),
               );
             },
