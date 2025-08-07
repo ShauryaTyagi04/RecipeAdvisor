@@ -5,6 +5,7 @@ import 'package:recipe_advisor_app/screens/recipe_generator/image_input_screen.d
 import 'package:recipe_advisor_app/screens/recipe_generator/ingredients_input_screen.dart';
 import 'package:recipe_advisor_app/screens/recipe_generator/recipe_input_screen.dart';
 import 'package:recipe_advisor_app/screens/recipe_generator/recipe_output_screen.dart';
+import 'package:recipe_advisor_app/screens/user/registration_screen.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -23,7 +24,8 @@ class RecipeAdvisorApp extends StatelessWidget {
           scaffoldBackgroundColor: const Color(0xFFFFE4CC)),
       initialRoute: '/',
       routes: {
-        '/': (context) => const MainScreen(),
+        // '/': (context) => const MainScreen(),
+        '/': (context) => RegistrationScreen(),
         '/IngredientsInputScreen': (context) => const IngredientsInputScreen(),
         '/ImageInputScreen': (context) => const ImageInputScreen(),
         '/RecipeInputScreen': (context) => const RecipeInputScreen(),

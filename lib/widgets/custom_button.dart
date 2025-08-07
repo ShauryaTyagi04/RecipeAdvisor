@@ -1,14 +1,16 @@
+// lib/widgets/custom_button.dart
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomButton extends StatelessWidget {
   final VoidCallback? onTap;
   final String text;
-
   final double? customWidth;
   final Color? backgroundColor;
   final Color? foregroundColor;
   final double? fontSize;
+  final bool isLoading;
 
   const CustomButton({
     super.key,
@@ -18,32 +20,28 @@ class CustomButton extends StatelessWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.fontSize,
+    this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Determine the colors to use, falling back to defaults if not provided.
     final Color finalBgColor = backgroundColor ?? const Color(0xFFFF7700);
     final Color finalFgColor = foregroundColor ?? Colors.white;
 
     return GestureDetector(
-      onTap: onTap,
+      // 3. DISABLE TAP WHEN LOADING
+      onTap: isLoading ? null : onTap,
       child: Container(
-        // The width will be the customWidth if provided, otherwise it will spread.
         width: customWidth ?? double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          // Use the determined background color
           color: finalBgColor,
-          // Set the corner radius
           borderRadius: BorderRadius.circular(10.0),
-          // Set the border color and width
           border: Border.all(
-            color: finalFgColor, // The border uses the foreground color
+            color: finalFgColor,
             width: 3.0,
           ),
-          // Add the box shadow
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.25),
@@ -52,14 +50,24 @@ class CustomButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Text(
-          text,
-          style: GoogleFonts.kodeMono(
-            color: finalFgColor, // Use the determined foreground color
-            fontSize: fontSize ?? 18.0, // Use custom size or default to 18
-            fontWeight: FontWeight.w600, // Semi-bold for better visibility
-          ),
-        ),
+        // 4. CONDITIONALLY DISPLAY SPINNER OR TEXT
+        child: isLoading
+            ? const SizedBox(
+                height: 28, // Match the approximate height of the text
+                width: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3.0,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                text,
+                style: GoogleFonts.kodeMono(
+                  color: finalFgColor,
+                  fontSize: fontSize ?? 18.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ),
     );
   }
