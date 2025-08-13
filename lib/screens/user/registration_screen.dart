@@ -116,7 +116,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        // TODO: Navigate to the login screen or home screen.
+        Navigator.of(context).pushNamed('/login');
       }
     } catch (e) {
       if (mounted) {
@@ -282,7 +282,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             const SizedBox(height: 18),
                             TextButton(
                               onPressed: () {
-                                /* TODO: Navigate to Login Screen */
+                                Navigator.of(context).pushNamed('/login');
                               },
                               child: Text(
                                 'Already have an account? Login',

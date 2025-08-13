@@ -9,7 +9,7 @@ class RecipeApiService {
   final String _apiKey = dotenv.env['RECIPE_API_KEY'] ?? '';
 
   Future<Recipe> queryAgent(String query) async {
-    final Uri url = Uri.parse('$_baseUrl/query/');
+    final Uri url = Uri.parse('$_baseUrl/recipes/query/');
 
     // Add logging to see what's happening
     debugPrint('[API Call] Attempting to POST to: $url');
