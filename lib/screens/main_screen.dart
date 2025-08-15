@@ -34,10 +34,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        fullname: "Full Name",
-        username: "USERNAME",
-      ),
+      appBar: CustomAppBar(),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: CustomBottomNavBar(
         selectedIndex: _selectedIndex,

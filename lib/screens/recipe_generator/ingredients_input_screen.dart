@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recipe_advisor_app/api/auth_api_service.dart';
 import 'package:recipe_advisor_app/api/recipe_api_service.dart';
 import 'package:recipe_advisor_app/models/recipe_model.dart';
 import 'package:recipe_advisor_app/widgets/custom_app_bar.dart';
@@ -19,7 +20,15 @@ class IngredientsInputScreen extends StatefulWidget {
 class _IngredientsFeatureScreenState extends State<IngredientsInputScreen> {
   final TextEditingController _ingredientController = TextEditingController();
   final List<String> _ingredients = [];
-  final RecipeApiService _apiService = RecipeApiService();
+
+  // 1. Declare _apiService as late final
+  late final RecipeApiService _apiService;
+
+  @override
+  void initState() {
+    super.initState();
+    _apiService = RecipeApiService(AuthApiService());
+  }
 
   bool _isLoading = false;
 
@@ -88,8 +97,6 @@ class _IngredientsFeatureScreenState extends State<IngredientsInputScreen> {
       isLoading: _isLoading,
       child: Scaffold(
         appBar: CustomAppBar(
-          fullname: "Full Name",
-          username: "USERNAME",
           hasPrefixIcon: true,
         ),
         body: Padding(

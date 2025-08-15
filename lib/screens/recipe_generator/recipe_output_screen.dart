@@ -26,8 +26,6 @@ class RecipeOutputScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: CustomAppBar(
-        fullname: "Full Name",
-        username: "USERNAME",
         hasPrefixIcon: true,
       ),
       body: SingleChildScrollView(

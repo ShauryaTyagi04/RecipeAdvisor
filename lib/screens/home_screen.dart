@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_advisor_app/api/auth_api_service.dart';
 import '../api/recipe_api_service.dart';
 import '../models/recipe_model.dart';
 
@@ -11,7 +12,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _controller = TextEditingController();
-  final RecipeApiService _apiService = RecipeApiService();
+
+  // 2. --- DECLARE THE SERVICE AS 'late final' ---
+  // This tells Dart it will be initialized before it's used.
+  late final RecipeApiService _apiService;
+
+  // 3. --- INITIALIZE THE SERVICE IN initState ---
+  @override
+  void initState() {
+    super.initState();
+    _apiService = RecipeApiService(AuthApiService());
+  }
 
   Recipe? _recipe;
   String? _errorMessage;
