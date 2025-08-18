@@ -132,27 +132,31 @@ class _RecipeOutputScreenState extends State<RecipeOutputScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // --- 4. CONDITIONAL LIKE BUTTON ---
+                // const SizedBox(width: 48),
+                Expanded(child: StrokedText(text: _recipe.name)),
                 SizedBox(
                   width: 48,
                   height: 48,
                   // Only show the LikeButton if the recipe is AI-generated.
-                  child: isAiGenerated
+                  child: (_recipe.id == null || isAiGenerated)
                       ? LikeButton(
                           recipe: _recipe,
                           onRecipeUpdated: (updatedRecipe) {
+                            // --- THIS IS THE CRITICAL FIX ---
+                            // When the button gets the full recipe data back from the provider,
+                            // this callback is triggered. Calling setState() here forces
+                            // the entire screen to rebuild with the new data.
                             setState(() {
                               _recipe = updatedRecipe;
                             });
                           },
                           source: RecipeSource.ai,
                         )
-                      : null, // Otherwise, show nothing, maintaining the space.
+                      : null,
                 ),
-                Expanded(child: StrokedText(text: _recipe.name)),
-                const SizedBox(width: 48),
               ],
             ),
             const SizedBox(height: 8),

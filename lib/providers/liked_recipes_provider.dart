@@ -8,15 +8,48 @@ class LikedRecipesProvider with ChangeNotifier {
   final RecipeApiService _recipeApiService = RecipeApiService(AuthApiService());
 
   Set<int> _likedRecipeIds = {};
-  final Map<int, Recipe> _likedRecipesMap = {};
+  Map<int, Recipe> _likedRecipesMap = {};
+  List<Recipe> _createdRecipes = [];
 
   UnmodifiableSetView<int> get likedRecipeIds =>
       UnmodifiableSetView(_likedRecipeIds);
   UnmodifiableMapView<int, Recipe> get likedRecipesMap =>
       UnmodifiableMapView(_likedRecipesMap);
+  List<Recipe> get createdRecipes => _createdRecipes;
 
   bool isLiked(int recipeId) {
     return _likedRecipeIds.contains(recipeId);
+  }
+
+  Future<void> fetchAllCookbookData() async {
+    try {
+      final results = await Future.wait([
+        _recipeApiService.getSavedRecipes(),
+        _recipeApiService.getCreatedRecipes(),
+      ]);
+
+      final List<Recipe> likedRecipes = results[0];
+      final List<Recipe> createdRecipes = results[1];
+
+      // Process the liked recipes list
+      _likedRecipeIds.clear();
+      _likedRecipesMap.clear();
+      for (var recipe in likedRecipes) {
+        if (recipe.id != null) {
+          _likedRecipeIds.add(recipe.id!);
+          _likedRecipesMap[recipe.id!] = recipe;
+        }
+      }
+
+      // Assign the created recipes list
+      _createdRecipes = createdRecipes;
+
+      // Notify listeners that both lists have been updated.
+      notifyListeners();
+    } catch (e) {
+      // The error message you are seeing is being caught and printed here.
+      debugPrint("Failed to fetch cookbook data: $e");
+    }
   }
 
   Future<void> fetchLikedRecipes() async {
@@ -75,7 +108,6 @@ class LikedRecipesProvider with ChangeNotifier {
   // --- 2. THE SECOND FIX: Remove from the map when unliking ---
   Future<void> toggleLikeStatus(int recipeId) async {
     final currentlyLiked = isLiked(recipeId);
-
     try {
       if (currentlyLiked) {
         await _recipeApiService.unsaveRecipe(recipeId);
@@ -83,16 +115,11 @@ class LikedRecipesProvider with ChangeNotifier {
         await _recipeApiService.saveRecipe(recipeId);
       }
 
-      // After any successful like/unlike action, re-fetch the entire list.
-      // This guarantees the local state perfectly matches the re-sequenced database state.
-      await fetchLikedRecipes();
+      await fetchAllCookbookData();
     } catch (e) {
       debugPrint("Failed to toggle like status: $e");
-      // No need to revert UI optimistically anymore, as we fetch the source of truth.
-      // Just re-throw or show an error.
       rethrow;
     }
-    // The final notifyListeners() is now inside fetchLikedRecipes().
   }
 
   List<Recipe> getLikedRecipes() {
@@ -112,5 +139,25 @@ class LikedRecipesProvider with ChangeNotifier {
       _likedRecipesMap[recipe.id!] = recipe;
     }
     notifyListeners();
+  }
+
+  Future<Recipe> addNewUserRecipe(Recipe newRecipe) async {
+    try {
+      // Have the API service create the recipe and return the saved instance
+      // with its new ID and source from the database.
+      final savedRecipe = await _recipeApiService.createRecipe(newRecipe);
+
+      // --- THIS IS THE FIX ---
+      // Manually add the newly created recipe to the beginning of the local list.
+      _createdRecipes.insert(0, savedRecipe);
+
+      // Notify all listening widgets that the data has changed.
+      notifyListeners();
+
+      return savedRecipe;
+    } catch (e) {
+      debugPrint("Error in addNewUserRecipe: $e");
+      rethrow;
+    }
   }
 }

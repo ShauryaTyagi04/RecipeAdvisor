@@ -42,7 +42,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
   Future<void> _submitRecipe() async {
     if (!_formKey.currentState!.validate()) {
-      Navigator.pushNamed(context, 'cookBookScreen');
       return;
     }
 
@@ -61,9 +60,8 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     );
 
     try {
-      final savedRecipe =
-          await Provider.of<LikedRecipesProvider>(context, listen: false)
-              .saveAndLikeNewRecipe(newRecipe);
+      await Provider.of<LikedRecipesProvider>(context, listen: false)
+          .addNewUserRecipe(newRecipe);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -72,7 +70,9 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pop(savedRecipe);
+        // Your navigation logic is correct.
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (route) => false);
       }
     } catch (e) {
       if (mounted) {

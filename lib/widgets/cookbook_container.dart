@@ -7,24 +7,17 @@ import 'package:recipe_advisor_app/widgets/stroked_text.dart';
 class CookbookContainer extends StatelessWidget {
   final int index;
   final Recipe recipe;
-  final Function(Recipe) onRecipeUpdated;
   final VoidCallback onTap;
-  final bool showLikeButton;
 
   const CookbookContainer({
     super.key,
     required this.index,
     required this.recipe,
-    required this.onRecipeUpdated,
     required this.onTap,
-    this.showLikeButton = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bool shouldDisplayLikeButton =
-        showLikeButton && recipe.source == 'AI_GENERATED';
-
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
@@ -51,9 +44,9 @@ class CookbookContainer extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   color: Colors.white,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // --- SIMPLIFY THE ROW ---
+                      // We remove the LikeButton from here.
                       StrokedText(
                         text: "#${index + 1}",
                         style: StrokedTextStyle.secondary,
@@ -69,14 +62,8 @@ class CookbookContainer extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (shouldDisplayLikeButton)
-                        LikeButton(
-                          recipe: recipe,
-                          onRecipeUpdated: onRecipeUpdated,
-                          source: RecipeSource.ai,
-                        )
-                      else
-                        const SizedBox(width: 48),
+                      // The spacer on the right ensures the title remains centered.
+                      const SizedBox(width: 48),
                     ],
                   ),
                 ),

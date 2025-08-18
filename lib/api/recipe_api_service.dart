@@ -107,4 +107,16 @@ class RecipeApiService {
       throw Exception(e.response?.data['detail'] ?? 'Failed to delete recipe.');
     }
   }
+
+  Future<void> updateCreatedRecipesOrder(List<int> orderedRecipeIds) async {
+    try {
+      await _dio.put(
+        '/users/me/created-recipes/order', // Calls the new endpoint
+        data: {'ordered_ids': orderedRecipeIds},
+      );
+    } on DioException catch (e) {
+      throw Exception(
+          e.response?.data['detail'] ?? 'Failed to update recipe order.');
+    }
+  }
 }
