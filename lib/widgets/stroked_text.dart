@@ -1,65 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// No change needed to the enum
 enum StrokedTextStyle {
   primary, // Orange text with white stroke
   secondary, // White text with orange stroke
 }
 
 class StrokedText extends StatelessWidget {
-  // Required text content
   final String text;
-
-  // Optional parameters for customization
   final StrokedTextStyle style;
   final double fontSize;
   final FontWeight fontWeight;
   final double strokeWidth;
+  // --- 1. ADD THE NEW 'inverse' PROPERTY ---
+  final bool inverse;
+  final TextAlign textAlign;
 
   const StrokedText({
     super.key,
     required this.text,
-    // Provide default values for all optional parameters
     this.style = StrokedTextStyle.primary,
     this.fontSize = 32.0,
     this.fontWeight = FontWeight.w700,
     this.strokeWidth = 4.0,
+    this.inverse = false, // Default to not inverted
+    this.textAlign = TextAlign.center,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Determine the colors based on the selected style
-    final Color primaryColor = style == StrokedTextStyle.primary
+    // --- 2. UPDATE COLOR LOGIC ---
+    // This logic determines the colors based on the style and the new inverse flag.
+    final effectiveStyle = inverse
+        ? (style == StrokedTextStyle.primary
+            ? StrokedTextStyle.secondary
+            : StrokedTextStyle.primary)
+        : style;
+
+    final Color primaryColor = effectiveStyle == StrokedTextStyle.primary
         ? const Color(0xFFFF7700)
         : Colors.white;
-    final Color strokeColor = style == StrokedTextStyle.primary
+    final Color strokeColor = effectiveStyle == StrokedTextStyle.primary
         ? Colors.white
         : const Color(0xFFFF7700);
 
     return Stack(
       alignment: Alignment.center,
       children: [
-        // The stroke text (bottom layer)
+        // Stroke (bottom layer)
         Text(
           text,
-          textAlign: TextAlign.center,
+          textAlign: textAlign,
           style: GoogleFonts.kodeMono(
             fontSize: fontSize,
             fontWeight: fontWeight,
             foreground: Paint()
               ..style = PaintingStyle.stroke
               ..strokeWidth = strokeWidth
-              ..color = strokeColor, // Use the determined stroke color
+              ..color = strokeColor,
           ),
         ),
-        // The main text (top layer)
+        // Fill (top layer)
         Text(
           text,
-          textAlign: TextAlign.center,
+          textAlign: textAlign,
           style: GoogleFonts.kodeMono(
             fontSize: fontSize,
             fontWeight: fontWeight,
-            color: primaryColor, // Use the determined primary color
+            color: primaryColor,
           ),
         ),
       ],

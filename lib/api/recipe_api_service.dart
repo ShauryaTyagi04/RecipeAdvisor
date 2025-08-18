@@ -8,7 +8,6 @@ class RecipeApiService {
   late final Dio _dio;
 
   RecipeApiService(AuthApiService authService) {
-    // It uses the same DioClient, getting the authService passed in.
     _dio = DioClient(authService).instance;
   }
 
@@ -24,6 +23,88 @@ class RecipeApiService {
     } on DioException catch (e) {
       debugPrint('[API Call] Failed! Server returned error: ${e.message}');
       throw Exception(e.response?.data['detail'] ?? 'Failed to load recipe.');
+    }
+  }
+
+  Future<Recipe> createRecipe(Recipe recipe) async {
+    try {
+      final response = await _dio.post('/recipes/', data: recipe.toJson());
+      return Recipe.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create recipe.');
+    }
+  }
+
+  Future<Recipe> createAiRecipe(Recipe recipe) async {
+    try {
+      final response =
+          await _dio.post('/recipes/ai-generated/', data: recipe.toJson());
+      return Recipe.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to create recipe.');
+    }
+  }
+
+  Future<void> saveRecipe(int recipeId) async {
+    try {
+      // Expecting a 204 No Content response on success
+      await _dio.post('/users/me/liked-recipes/$recipeId');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to save recipe.');
+    }
+  }
+
+  Future<void> unsaveRecipe(int recipeId) async {
+    try {
+      await _dio.delete('/users/me/liked-recipes/$recipeId');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['detail'] ?? 'Failed to unsave recipe.');
+    }
+  }
+
+  Future<List<Recipe>> getSavedRecipes() async {
+    try {
+      final response = await _dio.get('/users/me/liked-recipes/');
+      return (response.data as List)
+          .map((recipeJson) => Recipe.fromJson(recipeJson))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+          e.response?.data['detail'] ?? 'Failed to get saved recipes.');
+    }
+  }
+
+  Future<List<Recipe>> getCreatedRecipes() async {
+    try {
+      final response = await _dio.get('/users/me/created-recipes/');
+      return (response.data as List)
+          .map((recipeJson) => Recipe.fromJson(recipeJson))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+          e.response?.data['detail'] ?? 'Failed to get created recipes.');
+    }
+  }
+
+  Future<void> updateLikedRecipesOrder(List<int> orderedRecipeIds) async {
+    try {
+      await _dio.put(
+        '/users/me/liked-recipes/order',
+        data: {'ordered_ids': orderedRecipeIds},
+      );
+    } on DioException catch (e) {
+      throw Exception(
+          e.response?.data['detail'] ?? 'Failed to update recipe order.');
+    }
+  }
+
+  Future<void> deleteRecipe(int recipeId) async {
+    try {
+      // Calls the new endpoint we created in the backend.
+      await _dio.delete('/recipes/$recipeId');
+    } on DioException catch (e) {
+      // Provide a more specific error message.
+      throw Exception(e.response?.data['detail'] ?? 'Failed to delete recipe.');
     }
   }
 }

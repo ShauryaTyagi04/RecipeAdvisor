@@ -53,7 +53,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
                         onTap: () {
-                          // TODO: Implement navigation to home if not already there.
+                          Navigator.pushNamed(context, '/home');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(8.0),
@@ -61,8 +61,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12.0),
                           ),
-                          child: const Icon(Icons.home_rounded,
-                              color: Color(0xFFFF7700)),
+                          child: const Icon(
+                            Icons.home_rounded,
+                            color: Color(0xFFFF7700),
+                            size: 30,
+                          ),
                         ),
                       ),
                     ),
@@ -121,12 +124,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     onTap: onSettingsTap,
                     child: Container(
                       padding: const EdgeInsets.all(8.0),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
-                      child:
-                          const Icon(Icons.settings, color: Color(0xFFFF7700)),
+                      child: const Icon(
+                        Icons.settings,
+                        color: Color(0xFFFF7700),
+                        size: 30,
+                      ),
                     ),
                   ),
                 ],

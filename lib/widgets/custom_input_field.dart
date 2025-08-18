@@ -9,19 +9,18 @@ class CustomInputField extends StatefulWidget {
   final bool isPassword;
   final TextEditingController? controller;
   final TextInputType keyboardType;
-  // 1. ADD VALIDATOR PROPERTY
-  // It's a function that takes a String? and returns a String? (the error message).
   final String? Function(String?)? validator;
+  final int? maxLines;
 
-  const CustomInputField({
-    super.key,
-    required this.icon,
-    required this.labelText,
-    this.isPassword = false,
-    this.controller,
-    this.keyboardType = TextInputType.text,
-    this.validator, // 2. ADD TO CONSTRUCTOR
-  });
+  const CustomInputField(
+      {super.key,
+      required this.icon,
+      required this.labelText,
+      this.isPassword = false,
+      this.controller,
+      this.keyboardType = TextInputType.text,
+      this.validator,
+      this.maxLines});
 
   @override
   State<CustomInputField> createState() => _CustomInputFieldState();
@@ -38,6 +37,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
       obscureText: widget.isPassword ? _obscureText : false,
       keyboardType: widget.keyboardType,
       validator: widget.validator, // 3. PASS VALIDATOR TO THE WIDGET
+      maxLines: widget.isPassword ? 1 : widget.maxLines,
       autovalidateMode:
           AutovalidateMode.onUserInteraction, // Validate as user types
       style: GoogleFonts.livvic(
